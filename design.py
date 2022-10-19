@@ -1,23 +1,15 @@
-#Get a patients drug data
-#grab chemical name and build a library to store chemical name and merchant name and indiction and pharmalogical classification. 
 ##Resort the data according to the pharmacologic classification 
 ###Print out tree mapping drugs according to classification and date 
 #### Put indications for a drug behind the drug name
 print("reference: patient_list 1.5 mrd")
-print("Author: M117 H.R.T")
-print("modified: M118 T.Y.H")
+print("Author: M117 H.R.T, M118 T.Y.H")
 import bs4
 import requests
 import pandas as pd
-#import os
-import re
-import math
+
 ##########################################################################
-import random
-import time
-import json
-doc_num='DOC98021'
-password_num="DOC98021"
+doc_num=input('DOC帳號: ')
+password_num=input("密碼:")
 global login_session
 login_session=requests.Session()
 
@@ -29,7 +21,7 @@ global chart_num
 section_num = input("科別:")
 vs_num = input("主治DOC:")
 ward_num = input("病房:")
-bed_num = ""
+bed_num = ''
 chart_num=''
 
 
@@ -104,16 +96,16 @@ def create_pt_list():
         outdate1 = x['OUTDATETIME']
         print("出院日" + outdate1)
         outdates.append(outdate1)
-        
+
         if outdate1 == "":
             chartnum1 = x['CHARTNO']
             print("病歷號" + chartnum1)
             chartnums.append(chartnum1)
-            
+
             hcasenum1 = x['HCASENO']
             print(hcasenum1)
             hcasenums.append(hcasenum1)
-            
+
             NameGenderAge1 = x['NameGenderAge']
             NrBedNo1 = x['NrBedNo']
             indatetime1 = x['INDATETIME'][:7]
@@ -125,19 +117,19 @@ def create_pt_list():
 ####
 def aligns_last(string, length = 73):
     difference = length - len(string) 
-    
+
     new_string = ""
     space = " "
     # 計算限定長度為20時需要補齊多少個空格
     if difference == 0: # 若差值為0則不需要補
         return string
-    
-    
+
+
     elif difference < 0: 
         print('錯誤：限定的對齊長度小於字元串長度!') 
         return None
-    
-    
+
+
     else: 
         new_string = string[:-31] + space * difference + string[-31:]
         return new_string
@@ -146,39 +138,39 @@ def aligns_last(string, length = 73):
 
 def aligns_long(string, length = 86):
     difference = length - len(string) 
-    
+
     new_string = ""
     space = " "
     # 計算限定長度為20時需要補齊多少個空格
     if difference == 0: # 若差值為0則不需要補
         return string
-    
-    
+
+
     elif difference < 0: 
         print('錯誤：限定的對齊長 度小於字元串長度!') 
         return None
-        
-    
-    
+
+
+
     else: 
         new_string = string[:-44] + space * difference + string[-44:]
         return new_string
 
 def aligns_drugname(string, length = 20):
     difference = length - len(string) 
-    
+
     new_string = ""
     space = " "
     # 計算限定長度為20時需要補齊多少個空格
     if difference == 0: # 若差值為0則不需要補
         return string
-    
-    
+
+
     elif difference < 0: 
         print('錯誤：限定的對齊長度小於字元串長度!') 
         return string[:20]
-    
-    
+
+
     else: 
         new_string = string + space * difference
         return new_string
@@ -189,14 +181,14 @@ def aligns_drugname(string, length = 20):
 
 def get_druglist():
     global patients_drugs
+    patients_drugs=[]
     global patients_drugs_forsearch 
-    patients_drugs=pd.DataFrame(columns=["商品名", "dose", "freq", "method", "開始時間"])
     patients_drugs_forsearch = []
     for h in range(len(hcasenums)):
         print("drug" + str(h)*10)
         ###################################################################################################
         #drug
-        
+
         drug_url = 'http://mobilereport.ndmctsgh.edu.tw/mr/HISEXNDREPORT.aspx?login_id=' + doc_num + '&special=n&cno=' + chartnums[h]
         headers = {
         #'User-Agent': user_agent.random,
@@ -207,19 +199,19 @@ def get_druglist():
         }
         drug_oc = login_session.get(drug_url, verify=False, headers=headers)
         #print(response.content)
-        
-        
+
+
         if drug_oc.status_code == requests.codes.ok:
             print("取得成功")
         else:
             print("取得失敗")
-            
+
         #print(htmlfile4.text)
-        
+
         #import bs4
         drug_soup=bs4.BeautifulSoup(drug_oc.text, 'lxml')
-        
-        
+
+
         #div data-role="content"
         drugdata = drug_soup.find('div', {'data-role': 'content'})
         #print("資料型態", type(table))
@@ -227,29 +219,29 @@ def get_druglist():
         #print(drugdata)
         print(drugdata.text)
         print(drugdata.text[87:-1])  ##delete the most upper line
-        
+
         #patients_drugs.append(drugdata.text[86:])
-        
-        
-        
-        
+
+
+
+
         druglist = drugdata.text[87:-1].splitlines() ##put a bunch of string seperated by \n into 
 
-        
+
         drugs= []
-        
+
         drug_dose = []
-        
+
         drug_freq = []
-        
+
         drug_method = []
-        
+
         drug_start_time = []
         #drugothers = []
-        
+
         #drugs_forsearch = []
-        
-        
+
+
         for drugline in druglist:
             #diff = 84-len(drugline)        
             #if len(drugline) > 75:
@@ -257,10 +249,10 @@ def get_druglist():
             #else:
             #    drugline = aligns_last(drugline)
 
-            
-           
-            
-            
+
+
+
+
 
             '''
             #drugname = drugline[:30]
@@ -273,7 +265,7 @@ def get_druglist():
             '''
             drugname = drugline[:42].title()
             drugs.append(drugname)
-            
+
             #686
             drug_dose1 = drugline[42:48]
             drug_dose.append(drug_dose1)
@@ -281,27 +273,27 @@ def get_druglist():
             drug_freq.append(drug_freq1)
             drug_method1 = drugline[56:62]
             drug_method.append(drug_method1)
-            
+
             drug_start_time1 = drugline[62:73]
             drug_start_time.append(drug_start_time1)
             #drugs.append(drugname + drugother)
-            
-            
+
+
         #drugdata_cut = '\n'.join(drugs)
         #patients_drugs.append(drugdata_cut)
-        
-        druginfo_dataframe = pd.DataFrame(list(zip(drugs, drug_dose, drug_freq, drug_method, drug_start_time)),
+        global druginfo_dataframe
+        druginfo_dataframe = pd.DataFrame(list(zip(drugs, drug_dose, drug_freq,  drug_method, drug_start_time)),
                                     columns=["商品名", "dose", "freq", "method", "開始時間"])
-        
-        
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
+
+
         patients_drugs.append(druginfo_dataframe)
-        
+
         patients_drugs_forsearch.append(drugs)
 
 
@@ -317,4 +309,170 @@ create_pt_list()
 get_druglist()
 #testing
 print(NameGenderAges)
+print(NrBedNos)
     #print("Prof:"+ a["NameGenderAge"] + "   CHARTNO"+ a["CHARTNO"] + "   VS:" + a["VSDRNAME"] +"   Bednumber:" + a['NrBedno'] + "\n")
+
+################################################################################################################
+drugtypelist=['Alimentary tract and metabolism',
+'Blood and blood forming organs',
+'Cardiovascular system',
+'Dermatologicals',
+'Genito urinary system and sex hormones',
+'Systemic hormonal preparations, excl. sex hormones and insulins',
+'Antiinfectives for systemic use',
+'Antineoplastic and immunomodulating agents',
+'Musculo-skeletal system',
+'Nervous system',
+'Antiparasitic products, insecticides and repellents',
+'Respiratory system',
+'Sensory organs',
+'Various',
+'None!'
+]
+global total_dataframes
+total_dataframe = pd.DataFrame(columns=["Drugtypes", "商品名", "Drugnames_short", "dose", "freq", "method", "開始時間"])
+global h_dataframes
+h_dataframes = []
+
+for h in range(len(hcasenums)):
+    print("drug" + str(h)*10)   
+    global objtagdrugnames
+    global objtagdrugnames_short
+    global objtagdrugtypes
+    global objtagdrugindis
+    objtagdrugnames = []
+    objtagdrugnames_short = []
+    objtagdrugtypes = []
+    objtagdrugindis = []
+    
+    
+    for i in range(len(patients_drugs_forsearch[h])):
+        print("drug" + str(h)*10 + str(i)*10)  
+
+        
+        
+        #querydrug = druglist[i][:30]
+        querydrug = patients_drugs_forsearch[h][i]
+        print(querydrug)
+        
+        print(querydrug)
+        url = "http://f5-eserver101.ndmctsgh.edu.tw/Med/web/MedList.aspx?QryType=1&PrefixName=" + querydrug
+        
+        
+        #import requests
+        #import bs4
+        
+        
+        #抓藥物網址
+        #time.sleep(delay)
+        response = requests.get(url)
+        #print(response.text)
+        
+        objSoup1=bs4.BeautifulSoup(response.text, 'lxml')
+        print(type(objSoup1))
+        
+        
+        objtag1 = objSoup1.find("td")
+        
+        
+        if objtag1 == None:
+            objtagdrugnames.append("None!")
+            objtagdrugnames_short.append("None!")
+
+            objtagdrugtypes.append("None!")
+            #h_drugindex[h].append("None!")
+            objtagdrugindis.append("None!")
+            continue
+            
+        
+        objtag2 = objtag1.find("a")
+        
+        drugurl = "http://f5-eserver101.ndmctsgh.edu.tw/Med/web/" + objtag2.get("href")
+        
+        print(drugurl)
+        
+        #抓藥物資料
+        
+        response2 = requests.get(drugurl)
+        print(response.text)
+        
+        objSoup2=bs4.BeautifulSoup(response2.text, 'lxml')
+        print(type(objSoup2))
+        
+        
+        objtag3 = objSoup2.find('div', {'id': 'accordion'})
+
+        
+        
+        #學名
+        print("學名" )
+        # <span id="labDrugElemCode1">
+        objtagdrugname1 = objtag3.find('span', {'id': 'labDrugElemCode1'})
+        objtagdrugname2 = objtag3.find('span', {'id': 'labDrugElemCode2'})
+        objtagdrugname3 = objtag3.find('span', {'id': 'labDrugElemCode3'})
+        objtagdrugname4 = objtag3.find('span', {'id': 'labDrugElemCode4'})
+
+        
+        objtagdrugname_1234 = objtagdrugname1.text +" "+ objtagdrugname2.text +" "+ objtagdrugname3.text +" "+ objtagdrugname4.text
+        print(objtagdrugname_1234.strip())
+        
+        if objtagdrugname_1234.strip() == "":
+            objtagdrugnames.append("None!")
+            objtagdrugnames_short.append("None!")
+
+            objtagdrugtypes.append("None!")
+
+            objtagdrugindis.append("None!")
+            continue
+        
+        objtagdrugnames.append(objtagdrugname_1234.strip().title())
+        objtagdrugnames_short.append(aligns_drugname(objtagdrugname_1234.strip().title()))
+        
+        
+        
+        
+        #分類
+        print("分類" )
+        #<a id="labAHFSA1"
+        objtagdrugtype0 = objtag3.find('span',{'id':'labATC'})
+        print(objtagdrugtype0.text.strip())
+        objtagdrugtypes.append(objtagdrugtype0.text.strip())
+
+        
+        
+        
+        #Indication
+        print("Indication" *10)
+        #<span id="labDOHINDICATION"><br>高血壓。</span>
+        objtagdrugindi = objtag3.find('span', {'id': 'labDOHINDICATION'})
+        
+        print(objtagdrugindi.text[:20])
+        objtagdrugindis.append(objtagdrugindi.text)
+        
+
+        
+    patients_drugs[h]["Drugtypes"] = objtagdrugtypes
+    patients_drugs[h]["Drugnames"] = objtagdrugnames
+    patients_drugs[h]["Drugnames_short"] = objtagdrugnames_short
+    patients_drugs[h]["Indications"] = objtagdrugindis
+
+    drugdataframe2 = patients_drugs[h].sort_values(by=['Drugtypes', "Drugnames"], ascending=True)
+
+    #localtimes = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()).replace(":","")
+    #drugdataframe2.to_excel('try drug' + chartnums[h] + NameGenderAges[h] + '.xls')
+
+    drugdataframe2.index = drugdataframe2["Drugtypes"]
+    #排對再append
+
+    drugdataframe3 = drugdataframe2[[ "商品名", "Drugnames_short", "dose", "freq", "method", "開始時間", "Indications"]]
+    global h_dataframes
+    h_dataframes.append(drugdataframe3)
+
+global html
+html=''
+for i in range(0,len(h_dataframes)-1):
+    html=html+'<br>'+NameGenderAges[i]+"  "+chartnums[i]+"  "+indatetimes[i]
+    html=html+h_dataframes[i].to_html()
+    
+with open("a.html",'w') as _file:
+    _file.write(html)
