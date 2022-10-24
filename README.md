@@ -1,5 +1,5 @@
-# Druglist
-Druglist for TSGH
+# Pomelo
+handy drug and patient information list for TSGH workers
 ## 已實現功能
 1. 從網站抓取病人藥物資料，適應症、禁忌症副作用、開始結束時間和途徑等
 2. 將Pandas表格輸出為html
