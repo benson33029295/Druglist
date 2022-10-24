@@ -1,13 +1,8 @@
-##Resort the data according to the pharmacologic classification 
-###Print out tree mapping drugs according to classification and date 
-#### Put indications for a drug behind the drug name
-print("reference: patient_list 1.5 mrd")
-print("Author: M117 H.R.T, M118 T.Y.H")
-import bs4
+from bs4 import BeautifulSoup 
 import requests
-import pandas as pd
-
+from pandas import DataFrame
 ##########################################################################
+
 doc_num=input('DOC帳號: ')
 password_num=input("密碼:")
 global login_session
@@ -208,8 +203,8 @@ def get_druglist():
 
         #print(htmlfile4.text)
 
-        #import bs4
-        drug_soup=bs4.BeautifulSoup(drug_oc.text, 'lxml')
+
+        drug_soup=BeautifulSoup(drug_oc.text, 'lxml')
 
 
         #div data-role="content"
@@ -282,7 +277,7 @@ def get_druglist():
         #drugdata_cut = '\n'.join(drugs)
         #patients_drugs.append(drugdata_cut)
         global druginfo_dataframe
-        druginfo_dataframe = pd.DataFrame(list(zip(drugs, drug_dose, drug_freq,  drug_method, drug_start_time)),
+        druginfo_dataframe = DataFrame(list(zip(drugs, drug_dose, drug_freq,  drug_method, drug_start_time)),
                                     columns=["商品名", "dose", "freq", "method", "開始時間"])
 
 
@@ -301,7 +296,7 @@ def get_druglist():
 
 ##MAIN CODE
 progressnote_oc= get_oc("http://f5-ws5.ndmctsgh.edu.tw/eForm/Account/Login")## get progress note main page original code
-progressnote_soup=bs4.BeautifulSoup(progressnote_oc.text, "lxml") ##Soup the progress note page
+progressnote_soup=BeautifulSoup(progressnote_oc.text, "lxml") ##Soup the progress note page
 
 ###above neccessary??
 
@@ -330,7 +325,7 @@ drugtypelist=['Alimentary tract and metabolism',
 'None!'
 ]
 global total_dataframes
-total_dataframe = pd.DataFrame(columns=["Drugtypes", "商品名", "Drugnames_short", "dose", "freq", "method", "開始時間"])
+total_dataframe = DataFrame(columns=["Drugtypes", "商品名", "Drugnames_short", "dose", "freq", "method", "開始時間"])
 global h_dataframes
 h_dataframes = []
 
@@ -359,16 +354,11 @@ for h in range(len(hcasenums)):
         url = "http://f5-eserver101.ndmctsgh.edu.tw/Med/web/MedList.aspx?QryType=1&PrefixName=" + querydrug
         
         
-        #import requests
-        #import bs4
-        
-        
-        #抓藥物網址
-        #time.sleep(delay)
+
         response = requests.get(url)
         #print(response.text)
         
-        objSoup1=bs4.BeautifulSoup(response.text, 'lxml')
+        objSoup1=BeautifulSoup(response.text, 'lxml')
         print(type(objSoup1))
         
         
@@ -394,9 +384,9 @@ for h in range(len(hcasenums)):
         #抓藥物資料
         
         response2 = requests.get(drugurl)
-        print(response.text)
+
         
-        objSoup2=bs4.BeautifulSoup(response2.text, 'lxml')
+        objSoup2=BeautifulSoup(response2.text, 'lxml')
         print(type(objSoup2))
         
         
@@ -442,7 +432,7 @@ for h in range(len(hcasenums)):
         
         
         #Indication
-        print("Indication" *10)
+        print("Indication")
         #<span id="labDOHINDICATION"><br>高血壓。</span>
         objtagdrugindi = objtag3.find('span', {'id': 'labDOHINDICATION'})
         
@@ -465,14 +455,16 @@ for h in range(len(hcasenums)):
     #排對再append
 
     drugdataframe3 = drugdataframe2[[ "商品名", "Drugnames_short", "dose", "freq", "method", "開始時間", "Indications"]]
-    global h_dataframes
     h_dataframes.append(drugdataframe3)
 
 global html
 html=''
-for i in range(0,len(h_dataframes)-1):
+print(len(h_dataframes))
+for i in range(len(h_dataframes)):
     html=html+'<br>'+NameGenderAges[i]+"  "+chartnums[i]+"  "+indatetimes[i]
     html=html+h_dataframes[i].to_html()
     
-with open("a.html",'w') as _file:
+with open("dodobird_is_cute.html",'w') as _file:
     _file.write(html)
+
+input("dodobird_is_cute.html 檔案在此資料夾產生 \n 注意如果重複執行程式會覆蓋原有檔案 \n 建議使用microsoft edge開啟並按下ctrlA再ctrlP列印整個網頁\n列印時使用橫式列印縮放50%最為理想 ")
