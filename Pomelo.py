@@ -464,10 +464,10 @@ global html
 html=''
 print(len(h_dataframes))
 for i in range(len(h_dataframes)):
-    html=html+'<br>'+ str(NrBedNos[i]) +" "+chartnums[i]+"  "+indatetimes[i]
+    html=html+'<br>'+str(NrBedNos[i]) +" "+ NameGenderAges[i] +"  病歷號:"+chartnums[i]+"  入院日期:"+indatetimes[i]
     html=html+h_dataframes[i].to_html()
     
-with open("dodobird_is_cute.html",'w') as _file:
+with open("dodobird_is_cute.html",'w', encoding="UTF-8") as _file:
     _file.write(html)
 
 input("dodobird_is_cute.html 檔案在此資料夾產生 \n 注意如果重複執行程式會覆蓋原有檔案 \n 建議使用microsoft edge開啟並按下ctrlA再ctrlP列印整個網頁\n列印時使用橫式列印縮放50%最為理想 ")
