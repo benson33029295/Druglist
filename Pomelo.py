@@ -16,7 +16,7 @@ global chart_num
 section_num = input("科別:")
 vs_num = input("主治DOC:")
 ward_num = input("病房:")
-bed_num = ''
+bed_num = input('bedno=')
 chart_num=''
 
 
@@ -82,6 +82,7 @@ def create_pt_list():
     hcasenums=[]
 
     NameGenderAges = []
+    WardNos=[]
     NrBedNos = []
     indatetimes = []
     vsnames = []
@@ -103,6 +104,7 @@ def create_pt_list():
 
             NameGenderAge1 = x['NameGenderAge']
             NrBedNo1 = x['NrBedNo']
+            
             indatetime1 = x['INDATETIME'][:7]
             vsname1 = x['VSDRNAME']
             NameGenderAges.append(NameGenderAge1)
@@ -392,6 +394,7 @@ for h in range(len(hcasenums)):
         
         objtag3 = objSoup2.find('div', {'id': 'accordion'})
 
+
         
         
         #學名
@@ -461,7 +464,7 @@ global html
 html=''
 print(len(h_dataframes))
 for i in range(len(h_dataframes)):
-    html=html+'<br>'+NameGenderAges[i]+"  "+chartnums[i]+"  "+indatetimes[i]
+    html=html+'<br>'+ str(NrBedNos[i]) +" "+chartnums[i]+"  "+indatetimes[i]
     html=html+h_dataframes[i].to_html()
     
 with open("dodobird_is_cute.html",'w') as _file:
