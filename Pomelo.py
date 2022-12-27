@@ -1,3 +1,4 @@
+print("請稍等一會~ 可愛的杜杜鳥值得您的等待")
 from bs4 import BeautifulSoup 
 import requests
 from pandas import DataFrame
@@ -16,7 +17,7 @@ global chart_num
 section_num = input("科別:")
 vs_num = input("主治DOC:")
 ward_num = input("病房:")
-bed_num = input('bedno=')
+bed_num = input('床號:')
 chart_num=''
 
 
@@ -68,7 +69,7 @@ def get_pt_oc():
 
 def create_pt_list():
     pt_oc=get_pt_oc() ## get patient list page original code as Request object
-    pt_list= pt_oc.json() ##retract a list of partient information form patient list original code
+    pt_list= pt_oc.json() ##retract a list of partient information from patient list original code
     global outdates
     global chartnums 
     global hcasenums 
@@ -92,7 +93,7 @@ def create_pt_list():
         outdate1 = x['OUTDATETIME']
         print("出院日" + outdate1)
         outdates.append(outdate1)
-
+##EXCLUDE PATIENT WITH ONE DAY DISCHARGE
         if outdate1 == "":
             chartnum1 = x['CHARTNO']
             print("病歷號" + chartnum1)
@@ -165,7 +166,7 @@ def aligns_drugname(string, length = 20):
 
     elif difference < 0: 
         print('錯誤：限定的對齊長度小於字元串長度!') 
-        return string[:20]
+        return string[:40]
 
 
     else: 
@@ -238,43 +239,67 @@ def get_druglist():
 
         #drugs_forsearch = []
 
-
         for drugline in druglist:
             #diff = 84-len(drugline)        
             #if len(drugline) > 75:
             #    drugline = aligns_long(drugline)
             #else:
             #    drugline = aligns_last(drugline)
+            global druglinecut
+            print(drugline)
+            if len(drugline)<=78:
+                drugname = drugline[:40]
+                druglinecut=drugline[-31:]
+                if drugname in drugs:
+                    ind = drugs.index(drugname)
+                    drug_dose1 = druglinecut[0:6]
+                    drug_dose[ind] += ("|"+drug_dose1)
+                    drug_freq1 = druglinecut[6:14]
+                    drug_freq[ind]+=("|"+drug_freq1)
+                    drug_method1 = druglinecut[14:20]
+                    drug_method[ind]+=("|"+drug_method1)
+                    drug_start_time1 = druglinecut[20:25]
+                    drug_start_time[ind]+=("|"+drug_start_time1)
 
+                else:
 
+                    drugs.append(drugname)
+                    drug_dose1 = druglinecut[0:6]
+                    drug_dose.append(drug_dose1)
+                    drug_freq1 = druglinecut[6:14]
+                    drug_freq.append(drug_freq1)
+                    drug_method1 = druglinecut[14:20]
+                    drug_method.append(drug_method1)
+                    drug_start_time1 = druglinecut[20:25]
+                    drug_start_time.append(drug_start_time1)
+                    #drugs.append(drugname + drugother)
 
+            else:
+                drugname = drugline[:40]
+                druglinecut=drugline[-44:]
+                if drugname in drugs:
+                    ind = drugs.index(drugname)
+                    drug_dose1 = druglinecut[0:6]
+                    drug_dose[ind] += ("|"+drug_dose1)
+                    drug_freq1 = druglinecut[6:14]
+                    drug_freq[ind]+=("|"+drug_freq1)
+                    drug_method1 = druglinecut[14:20]
+                    drug_method[ind]+=("|"+drug_method1)
+                    drug_start_time1 = druglinecut[20:25]
+                    drug_start_time[ind]+=("|"+drug_start_time1)
 
+                else:
 
-
-            '''
-            #drugname = drugline[:30]
-            drugname_forsearch = drugline[:42]
-            drugs_forsearch.append(drugname_forsearch)
-            '''
-            '''
-            drugother = drugline[43:62]  #686
-            drugothers.append(drugother)
-            '''
-            drugname = drugline[:42].title()
-            drugs.append(drugname)
-
-            #686
-            drug_dose1 = drugline[42:48]
-            drug_dose.append(drug_dose1)
-            drug_freq1 = drugline[48:56]
-            drug_freq.append(drug_freq1)
-            drug_method1 = drugline[56:62]
-            drug_method.append(drug_method1)
-
-            drug_start_time1 = drugline[62:73]
-            drug_start_time.append(drug_start_time1)
-            #drugs.append(drugname + drugother)
-
+                    drugs.append(drugname)
+                    drug_dose1 = druglinecut[0:6]
+                    drug_dose.append(drug_dose1)
+                    drug_freq1 = druglinecut[6:14]
+                    drug_freq.append(drug_freq1)
+                    drug_method1 = druglinecut[14:20]
+                    drug_method.append(drug_method1)
+                    drug_start_time1 = druglinecut[20:25]
+                    drug_start_time.append(drug_start_time1)
+                    #drugs.append(drugname + drugother)
 
         #drugdata_cut = '\n'.join(drugs)
         #patients_drugs.append(drugdata_cut)
@@ -406,7 +431,7 @@ for h in range(len(hcasenums)):
         objtagdrugname4 = objtag3.find('span', {'id': 'labDrugElemCode4'})
 
         
-        objtagdrugname_1234 = objtagdrugname1.text +" "+ objtagdrugname2.text +" "+ objtagdrugname3.text +" "+ objtagdrugname4.text
+        objtagdrugname_1234 = objtagdrugname1.text +"/"+ objtagdrugname2.text +"/"+ objtagdrugname3.text +"/"+ objtagdrugname4.text
         print(objtagdrugname_1234.strip())
         
         if objtagdrugname_1234.strip() == "":
@@ -457,11 +482,11 @@ for h in range(len(hcasenums)):
     drugdataframe2.index = drugdataframe2["Drugtypes"]
     #排對再append
 
-    drugdataframe3 = drugdataframe2[[ "商品名", "Drugnames_short", "dose", "freq", "method", "開始時間", "Indications"]]
+    drugdataframe3 = drugdataframe2[[ "商品名", "Drugnames", "dose", "freq", "method", "開始時間", "Indications"]]
     h_dataframes.append(drugdataframe3)
 
 global html
-html=''
+html='<br>'+"POMELO Ver1.3   PROGRAMMED BY M118 T.Y.H , INSPIRED BY M117 H.R.T"
 print(len(h_dataframes))
 for i in range(len(h_dataframes)):
     html=html+'<br>'+str(NrBedNos[i]) +" "+ NameGenderAges[i] +"  病歷號:"+chartnums[i]+"  入院日期:"+indatetimes[i]
@@ -470,4 +495,4 @@ for i in range(len(h_dataframes)):
 with open("dodobird_is_cute.html",'w', encoding="UTF-8") as _file:
     _file.write(html)
 
-input("dodobird_is_cute.html 檔案在此資料夾產生 \n 注意如果重複執行程式會覆蓋原有檔案 \n 建議使用microsoft edge開啟並按下ctrlA再ctrlP列印整個網頁\n列印時使用橫式列印縮放50%最為理想 ")
+input("dodobird_is_cute.html 檔案在此資料夾產生 \n 注意如果重複執行程式會覆蓋原有檔案 \n 建議使用GOOGLE CHROME開啟並按下ctrlA再ctrlP列印整個網頁\n列印時使用橫式列印縮放50%最為理想 ")
