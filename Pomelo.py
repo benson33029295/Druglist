@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup
 import requests
 from pandas import DataFrame
 ##########################################################################
-
+print_choice = input("想要藥理分類請輸入1, 想要中文適應症請輸入2 , 都想要請輸入3:")
 doc_num=input('DOC帳號: ')
 password_num=input("密碼:")
 global login_session
@@ -18,11 +18,10 @@ section_num = input("科別:")
 vs_num = input("主治DOC:")
 ward_num = input("病房:")
 bed_num = input('床號:')
-chart_num=''
+chart_num=input("病歷號:")
 
 
-def get_oc(address):
-# 按照網頁的請求構造請求頭
+def get_oc(address) :  # 按照網頁的請求構造請求頭
     headers = {
             #'User-Agent': user_agent.random,
             'Connection': 'keep-alive',
@@ -83,7 +82,6 @@ def create_pt_list():
     hcasenums=[]
 
     NameGenderAges = []
-    WardNos=[]
     NrBedNos = []
     indatetimes = []
     vsnames = []
@@ -335,26 +333,13 @@ print(NrBedNos)
     #print("Prof:"+ a["NameGenderAge"] + "   CHARTNO"+ a["CHARTNO"] + "   VS:" + a["VSDRNAME"] +"   Bednumber:" + a['NrBedno'] + "\n")
 
 ################################################################################################################
-drugtypelist=['Alimentary tract and metabolism',
-'Blood and blood forming organs',
-'Cardiovascular system',
-'Dermatologicals',
-'Genito urinary system and sex hormones',
-'Systemic hormonal preparations, excl. sex hormones and insulins',
-'Antiinfectives for systemic use',
-'Antineoplastic and immunomodulating agents',
-'Musculo-skeletal system',
-'Nervous system',
-'Antiparasitic products, insecticides and repellents',
-'Respiratory system',
-'Sensory organs',
-'Various',
-'None!'
-]
-global total_dataframes
-total_dataframe = DataFrame(columns=["Drugtypes", "商品名", "Drugnames_short", "dose", "freq", "method", "開始時間"])
+
 global h_dataframes
 h_dataframes = []
+global h_dataframes2
+h_dataframes2 = []
+global h_dataframes3
+h_dataframes3 = []
 
 for h in range(len(hcasenums)):
     print("drug" + str(h)*10)   
@@ -362,11 +347,12 @@ for h in range(len(hcasenums)):
     global objtagdrugnames_short
     global objtagdrugtypes
     global objtagdrugindis
+    global objtagdrugpaths
     objtagdrugnames = []
     objtagdrugnames_short = []
     objtagdrugtypes = []
     objtagdrugindis = []
-    
+    objtagdrugpaths = []
     
     for i in range(len(patients_drugs_forsearch[h])):
         print("drug" + str(h)*10 + str(i)*10)  
@@ -395,10 +381,9 @@ for h in range(len(hcasenums)):
         if objtag1 == None:
             objtagdrugnames.append("None!")
             objtagdrugnames_short.append("None!")
-
             objtagdrugtypes.append("None!")
-            #h_drugindex[h].append("None!")
             objtagdrugindis.append("None!")
+            objtagdrugpaths.append("None!")
             continue
             
         
@@ -430,21 +415,100 @@ for h in range(len(hcasenums)):
         objtagdrugname3 = objtag3.find('span', {'id': 'labDrugElemCode3'})
         objtagdrugname4 = objtag3.find('span', {'id': 'labDrugElemCode4'})
 
+
+        objtagdrugpath1_1 = ""
+        objtagdrugpath1_2 = ""
+        objtagdrugpath1_3 = ""
+
+        
+        objtagdrugpath2_1 = ""
+        objtagdrugpath2_2 = ""
+        objtagdrugpath2_3 = ""
+
+        
+        objtagdrugpath3_1 = ""
+        objtagdrugpath3_2 = ""
+        objtagdrugpath3_3 = ""
+
+        
+        objtagdrugpath4_1 = ""
+        objtagdrugpath4_2 = ""
+        objtagdrugpath4_3 = ""
+        
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSA1'}) != None :
+            objtagdrugpath1_1 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSA1'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSA2'}) != None :
+            objtagdrugpath1_2 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSA2'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSA3'}) != None :
+            objtagdrugpath1_3 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSA3'}).text
+
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSB1'}) != None:
+            objtagdrugpath2_1 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSB1'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSB2'}) != None:
+            objtagdrugpath2_2 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSB2'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSB3'}) != None:
+            objtagdrugpath2_3 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSB3'}).text
+
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSC1'}) != None :
+            objtagdrugpath3_1 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSC1'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSC2'}) != None :
+            objtagdrugpath3_2 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSC2'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSC3'}) != None :
+            objtagdrugpath3_3 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSC3'}).text
+
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSD1'}) != None:
+            objtagdrugpath4_1 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSD1'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSD2'}) != None:
+            objtagdrugpath4_2 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSD2'}).text
+        if objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSD3'}) != None:
+            objtagdrugpath4_3 = objSoup2.find("li",{'id':'AHFS1'}).find('a', {'id': 'labAHFSD3'}).text
+
         
         objtagdrugname_1234 = objtagdrugname1.text +"/"+ objtagdrugname2.text +"/"+ objtagdrugname3.text +"/"+ objtagdrugname4.text
+        
+        namecount = 0
+        if objtagdrugname1.text != "":
+            namecount += 1
+        if objtagdrugname2.text != "":
+            namecount += 1
+        if objtagdrugname3.text != "":
+            namecount += 1
+        if objtagdrugname4.text != "":
+            namecount += 1
         print(objtagdrugname_1234.strip())
+        objtagdrugpath1_1234 = ""
+        objtagdrugpath2_1234 = ""
+        objtagdrugpath3_1234 = ""
+        objtagdrugpath4_1234 = ""
+        
+        if namecount == 1:
+            objtagdrugpath1_1234 = objtagdrugpath1_1+">>" + objtagdrugpath1_2 + ">>" +objtagdrugpath1_3
+        if namecount == 2:
+            objtagdrugpath1_1234 = objtagdrugpath1_1+">>" + objtagdrugpath1_2 + ">>" +objtagdrugpath1_3
+            objtagdrugpath2_1234 = objtagdrugpath2_1+">>" + objtagdrugpath2_2 + ">>" +objtagdrugpath2_3
+        if namecount == 3:
+            objtagdrugpath1_1234 = objtagdrugpath1_1+">>" + objtagdrugpath1_2 + ">>" +objtagdrugpath1_3
+            objtagdrugpath2_1234 = objtagdrugpath2_1+">>" + objtagdrugpath2_2 + ">>" +objtagdrugpath2_3
+            objtagdrugpath3_1234 = objtagdrugpath3_1+">>" + objtagdrugpath3_2 + ">>" +objtagdrugpath3_3
+        if namecount == 4:
+            objtagdrugpath1_1234 = objtagdrugpath1_1+">>" + objtagdrugpath1_2 + ">>" +objtagdrugpath1_3
+            objtagdrugpath2_1234 = objtagdrugpath2_1+">>" + objtagdrugpath2_2 + ">>" +objtagdrugpath2_3
+            objtagdrugpath3_1234 = objtagdrugpath3_1+">>" + objtagdrugpath3_2 + ">>" +objtagdrugpath3_3
+            objtagdrugpath4_1234 = objtagdrugpath4_1+">>" + objtagdrugpath4_2 + ">>" +objtagdrugpath4_3
+            
+        objtagdrugpath_1234 = objtagdrugpath1_1234 +" / " +objtagdrugpath2_1234 +" / "+ objtagdrugpath3_1234 +" / "+ objtagdrugpath4_1234
         
         if objtagdrugname_1234.strip() == "":
             objtagdrugnames.append("None!")
             objtagdrugnames_short.append("None!")
-
             objtagdrugtypes.append("None!")
-
             objtagdrugindis.append("None!")
+            objtagdrugpaths.append("None!")
             continue
         
         objtagdrugnames.append(objtagdrugname_1234.strip().title())
         objtagdrugnames_short.append(aligns_drugname(objtagdrugname_1234.strip().title()))
+        objtagdrugpaths.append(objtagdrugpath_1234)
         
         
         
@@ -470,29 +534,45 @@ for h in range(len(hcasenums)):
 
         
     patients_drugs[h]["Drugtypes"] = objtagdrugtypes
-    patients_drugs[h]["Drugnames"] = objtagdrugnames
+    patients_drugs[h]["學名"] = objtagdrugnames
     patients_drugs[h]["Drugnames_short"] = objtagdrugnames_short
     patients_drugs[h]["Indications"] = objtagdrugindis
-
-    drugdataframe2 = patients_drugs[h].sort_values(by=['Drugtypes', "Drugnames"], ascending=True)
+    patients_drugs[h]["PATH"] = objtagdrugpaths
+    
+    drugdataframe2 = patients_drugs[h].sort_values(by=['Drugtypes', "學名"], ascending=True)
 
     #localtimes = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()).replace(":","")
     #drugdataframe2.to_excel('try drug' + chartnums[h] + NameGenderAges[h] + '.xls')
 
-    drugdataframe2.index = drugdataframe2["Drugtypes"]
+    drugdataframe2.index = drugdataframe2["商品名"]
     #排對再append
 
-    drugdataframe3 = drugdataframe2[[ "商品名", "Drugnames", "dose", "freq", "method", "開始時間", "Indications"]]
+    drugdataframe3 = drugdataframe2[[ "學名", "dose", "freq", "method", "開始時間", "Indications"]]
     h_dataframes.append(drugdataframe3)
-
+    drugdataframe4 = drugdataframe2[[ "學名", "dose", "freq", "method", "開始時間", "PATH"]]
+    h_dataframes2.append(drugdataframe4)
+    drugdataframe5 = drugdataframe2[[  "學名", "PATH", "Indications"]]
+    h_dataframes3.append(drugdataframe5)
+    
+    
 global html
 html='<br>'+"POMELO Ver1.3   PROGRAMMED BY M118 T.Y.H , INSPIRED BY M117 H.R.T"
-print(len(h_dataframes))
-for i in range(len(h_dataframes)):
-    html=html+'<br>'+str(NrBedNos[i]) +" "+ NameGenderAges[i] +"  病歷號:"+chartnums[i]+"  入院日期:"+indatetimes[i]
-    html=html+h_dataframes[i].to_html()
-    
+      
+if print_choice == '2':
+    for i in range(len(h_dataframes)):
+        html=html+'<br>'+str(NrBedNos[i]) +" "+ NameGenderAges[i] +"  病歷號:"+chartnums[i]+"  入院日期:"+indatetimes[i]
+        html=html+h_dataframes2[i].to_html()
+        
+if print_choice == '1':
+    for i in range(len(h_dataframes)):
+        html=html+'<br>'+str(NrBedNos[i]) +" "+ NameGenderAges[i] +"  病歷號:"+chartnums[i]+"  入院日期:"+indatetimes[i]
+        html=html+h_dataframes2[i].to_html()
+if print_choice == '3':
+    for i in range(len(h_dataframes)):
+        html=html+'<br>'+str(NrBedNos[i]) +" "+ NameGenderAges[i] +"  病歷號:"+chartnums[i]+"  入院日期:"+indatetimes[i]
+        html=html+h_dataframes3[i].to_html()
+
 with open("dodobird_is_cute.html",'w', encoding="UTF-8") as _file:
     _file.write(html)
 
-input("dodobird_is_cute.html 檔案在此資料夾產生 \n 注意如果重複執行程式會覆蓋原有檔案 \n 建議使用GOOGLE CHROME開啟並按下ctrlA再ctrlP列印整個網頁\n列印時使用橫式列印縮放50%最為理想 ")
+input("dodobird_is_cute.html 檔案在此資料夾產生 \n 注意如果重複執行程式會覆蓋原有檔案 \n 建議使用GOOGLE CHROME開啟並按下ctrlA再ctrlP列印整個網頁\n列印時使用橫式列印縮放50%最為理想")      
