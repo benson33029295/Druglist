@@ -1,0 +1,33 @@
+drugtypelist=['Alimentary tract and metabolism',
+'Blood and blood forming organs',
+'Cardiovascular system',
+'Dermatologicals',
+'Genito urinary system and sex hormones',
+'Systemic hormonal preparations, excl. sex hormones and insulins',
+'Antiinfectives for systemic use',
+'Antineoplastic and immunomodulating agents',
+'Musculo-skeletal system',
+'Nervous system',
+'Antiparasitic products, insecticides and repellents',
+'Respiratory system',
+'Sensory organs',
+'Various',
+'None!'
+]
+
+drugindexlist=[4.0,
+9.0,
+2.0,
+8.0,
+5.0,
+6.0,
+10.2,
+10.4,
+8.0,
+1.0,
+10.2,
+3.0,
+8.0,
+100.0,
+1000.0
+]
